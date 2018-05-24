@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+        <div class="content">
+            <table id="dataTable" border="1"cellpadding="0"cellspacing="0">
+
+            </table>
+        </div>
+        <script src="js/jquery-v1.10.2.min.js"></script>
+        <script>
+            $(function () {
+                //方法一
+                /*******
+                 1.当url指向本地数据文件中，google浏览器不支持，火狐 ie支持。
+
+                 2.eval()使用方法：当直接解析一个json数据格式的字符串时  使用var json=eval('('+result+')');
+
+                 当解析由json数据格式具体字符串时使用  var json=eval(data.item);两者是不同的
+                 *********/
+                $.ajax({
+                    type:"GET",//post也可以
+                    url:"data/data.json",
+                    dataType:"json",
+                    success:function(data){
+                        var json=eval(data.root.item);
+                        $.each(json,function(i,item){
+                            var name=item.name;
+                            var age=item.age;
+                            var sex=item.sex;
+                            $("#dataTable").append('<tr><td>'+name+'</td><td>'+age+'</td><td>'+sex+'</td></tr>');
+                        });
+                    },
+                    error:function(data){
+                        alert("failed");
+                    }
+                });
+                //  方法二
+                $.getJSON('data/data.json', function(data){
+                    var json=eval(data.root.item);
+                    $.each(json,function(i,item){
+                        var name=item.name;
+                        var age=item.age;
+                        var sex=item.sex;
+                        $("#dataTable").append('<tr><td>'+name+'</td><td>'+age+'</td><td>'+sex+'</td></tr>');
+                    });
+                });
+                //方法三
+                var xhr;
+                if(window,XMLHttpRequest){
+                    xhr=new XMLHttpRequest();
+                }else{
+                    if(window.ActiveXObject){
+                        xhr=new ActiveXObject("Msxml2.XMLHTTP");
+                    }else{
+                        xhr=new ActiveXObject("Microsoft.XMLHTTP");
+                    }
+                }
+                xhr.open("GET","data/data.json",true);
+                xhr.onreadystatechange=function(data){
+                    if(xhr.readyState==4 && xhr.status==200){
+                        var result=xhr.responseText;
+                        var json=eval('('+result+')');
+                        for(var i=0;i<json.root.item.length;i++){//多了一个节点
+                            var name=json.root.item[i].name;
+                            var age=json.root.item[i].age;
+                            var sex=json.root.item[i].sex;
+                            $("#dataTable").append('<tr><td>'+name+'</td><td>'+age+'</td><td>'+sex+'</td></tr>');
+                        }
+                    }
+                };
+                xhr.send();
+            })
+
+        </script>
+</body>
+</html>
